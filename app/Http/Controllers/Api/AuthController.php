@@ -10,6 +10,8 @@ use App\Models\VolunteerProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Http;
+
 
 class AuthController extends Controller
 { 
