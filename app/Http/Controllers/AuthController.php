@@ -14,6 +14,10 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+use App\Mail\SendOtpMail;
+use App\Models\PasswordResetOtp;
+use Illuminate\Support\Facades\Mail;
+
 
 class AuthController extends Controller
 { 
@@ -143,146 +147,78 @@ class AuthController extends Controller
 
     public function resetPassword(Request $request)
 {
-
-
     $request->validate([
 
         'email'=>'required|email',
 
-        'token'=>'required',
+        'otp'=>'required',
 
-        'password'=>'required|min:8|confirmed'
+        'password'=>'required|confirmed|min:8'
 
     ]);
 
-
-
-
-    $record = DB::table('password_reset_tokens')
-        ->where(
-            'email',
-            $request->email
-        )
-        ->first();
-
-
+    $record = PasswordResetOtp::where('email',$request->email)
+                ->where('otp',$request->otp)
+                ->first();
 
     if(!$record){
-
         return response()->json([
-
-            'message'=>'Invalid token'
-
+            'message'=>'Invalid OTP.'
         ],400);
-
     }
 
-
-
-    if(!Hash::check(
-        $request->token,
-        $record->token
-    )){
-
-
+    if(now()->gt($record->expires_at)){
         return response()->json([
-
-            'message'=>'Invalid token'
-
+            'message'=>'OTP expired.'
         ],400);
-
     }
 
-
-
-
-    $user = User::where(
-        'email',
-        $request->email
-    )->first();
-
-
+    $user = User::where('email',$request->email)->first();
 
     $user->update([
-
-        'password'=>Hash::make(
-            $request->password
-        )
-
+        'password'=>bcrypt($request->password)
     ]);
 
-
-
-
-    DB::table('password_reset_tokens')
-        ->where(
-            'email',
-            $request->email
-        )
-        ->delete();
-
-
+    $record->delete();
 
     return response()->json([
-
-        'message'=>'Password reset successfully'
-
+        'message'=>'Password reset successfully.'
     ]);
+}
 
-    }
+
+
+//https://mailtrap.io/sandboxes/4831649/settings
+
     public function forgotPassword(Request $request)
-    {
-
+{
     $request->validate([
-        'email'=>'required|email'
+        'email' => 'required|email'
     ]);
 
+    $user = User::where('email', $request->email)->first();
 
-    $user = User::where(
-        'email',
-        $request->email
-    )->first();
-
-
-    if(!$user){
-
+    if (!$user) {
         return response()->json([
-            'message'=>'Email not found'
+            'message' => 'User not found.'
         ],404);
-
     }
 
+    PasswordResetOtp::where('email',$request->email)->delete();
 
+    $otp = rand(100000,999999);
 
-    $token = Str::random(60);
-
-
-
-    DB::table('password_reset_tokens')
-        ->updateOrInsert(
-
-        [
-            'email'=>$request->email
-        ],
-
-        [
-
-            'token'=>Hash::make($token),
-
-            'created_at'=>Carbon::now()
-
-        ]);
-
-
-
-    return response()->json([
-
-        'message'=>'Reset token created',
-
-        'token'=>$token
-
+    PasswordResetOtp::create([
+        'email'=>$request->email,
+        'otp'=>$otp,
+        'expires_at'=>Carbon::now()->addMinutes(10)
     ]);
 
+    Mail::to($request->email)->send(new SendOtpMail($otp));
+
+    return response()->json([
+        'message'=>'OTP sent successfully.'
+    ]);
 }
 }
 

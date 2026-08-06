@@ -11,9 +11,18 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
+        
+         User::create([
+            'name' => 'Sham',
+            'email' => 'shamjom196@gmail.com',
+            'password' => Hash::make('12345678'),
+            'role' => 'admin',
+            'status' => 'active'
+        ]);
+
         // Admin
 
-        User::create([
+       /* User::create([
             'name' => 'Admin',
             'email' => 'admin@test.com',
             'password' => Hash::make('12345678'),
@@ -57,6 +66,6 @@ class UserSeeder extends Seeder
             'address' => 'Damascus',
             'total_hours' => 0,
             'status' => 'active'
-        ]);
+        ]);*/
     }
 }
