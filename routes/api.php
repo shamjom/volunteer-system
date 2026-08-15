@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TaskAssignmentController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\VolunteerSelfController;
+use App\Http\Controllers\EventRegistrationController;
 
   Route::post('/login', [AuthController::class, 'login']);//done
   Route::post('/forgot-password',[AuthController::class,'forgotPassword']);//done
@@ -18,6 +21,21 @@ Route::middleware('auth:sanctum')->group(function () {
     
     Route::get('/events', [EventController::class, 'index']);//done
     Route::get('/events/{event}', [EventController::class, 'show']);//done
+
+    Route::get('/notifications/unread', [NotificationController::class,'unread']);//done
+    Route::get('/notifications', [NotificationController::class,'index']);//done
+   Route::patch('/notifications/read-all', [NotificationController::class,'markAllAsRead']);
+   Route::patch('/notifications/{id}/read', [NotificationController::class,'markAsRead']);
+   Route::delete('/notifications/{id}', [NotificationController::class,'destroy']);
+
+   Route::get('/volunteer/profile', [VolunteerSelfController::class,'profile']);//done
+   Route::put('/volunteer/profile', [ VolunteerSelfController::class,'updateProfile']);//done
+   Route::get('/volunteer/events', [EventController::class,'volunteerEvents']);
+
+   Route::get('/volunteer/my-events', [EventRegistrationController::class,'mine']);
+   Route::post('/events/{event}/register', [EventRegistrationController::class,'register']);
+   Route::delete('/volunteer/event-registrations/{registration}/cancel', [EventRegistrationController::class,'cancel']);
+
 
 
 Route::middleware('admin')->group(function () {
@@ -52,6 +70,10 @@ Route::middleware('admin')->group(function () {
     Route::post('/tasks/{task}/assign',[TaskAssignmentController::class,'assign']);//done
     Route::delete('/tasks/{task}/users/{user}',[TaskAssignmentController::class,'unassign']);//done
     Route::get('/tasks/{task}/volunteers',[TaskAssignmentController::class,'volunteers']);//done
+
+    Route::get('/events/{event}/registrations', [EventRegistrationController::class,'index']);
+    Route::patch('/event-registrations/{registration}/approve', [EventRegistrationController::class,'approve']);
+    Route::patch('/event-registrations/{registration}/reject', [EventRegistrationController::class,'reject']);
      
     });
 

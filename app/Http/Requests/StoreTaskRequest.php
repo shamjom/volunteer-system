@@ -12,17 +12,14 @@ class StoreTaskRequest extends FormRequest
     }
 
     public function rules(): array
-    {
-        return [
-
-            'event_id' => 'required|exists:events,id',
-
-            'title' => 'required|string|max:255',
-
-            'description' => 'nullable|string',
-
-            'status' => 'required|in:pending,in_progress,completed',
-
-        ];
-    }
+   {
+    return [
+        'event_id' => 'required|exists:events,id',
+        'title' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'status' => 'required|in:pending,in_progress,completed',
+        'deadline' => 'required|date|after:now',
+        'required_volunteers' => 'required|integer|min:1',
+    ];
+}
 }

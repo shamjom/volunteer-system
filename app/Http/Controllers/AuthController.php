@@ -17,6 +17,8 @@ use Carbon\Carbon;
 use App\Mail\SendOtpMail;
 use App\Models\PasswordResetOtp;
 use Illuminate\Support\Facades\Mail;
+use App\Notifications\NewVolunteerPendingNotification;
+use App\Notifications\VolunteerApprovedNotification;
 
 
 class AuthController extends Controller
@@ -91,7 +93,31 @@ class AuthController extends Controller
             'message' => 'User created successfully',
             'user' => $user->load('volunteerProfile'),
         ], 201);
+
+
+        if ($data['role'] === 'volunteer') {
+
+    $profile = VolunteerProfile::create([
+        'user_id' => $user->id,
+        'phone' => $data['phone'] ?? null,
+        'address' => $data['address'] ?? null,
+        'total_hours' => 0,
+        'status' => 'pending',
+    ]);
+
+    $admins = User::where('role', 'admin')
+        ->where('status', 'active')
+        ->get();
+
+    foreach ($admins as $admin) {
+        $admin->notify(
+            new NewVolunteerPendingNotification($user)
+        );
     }
+}
+    }
+
+    
 
     public function approve(User $user)
     {
@@ -102,6 +128,7 @@ class AuthController extends Controller
         }
 
         $user->update(['status' => 'active']);
+        $user->notify(new VolunteerApprovedNotification());
 
         $user->volunteerProfile()->updateOrCreate(
             ['user_id' => $user->id],

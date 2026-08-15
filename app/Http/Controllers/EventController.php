@@ -68,4 +68,17 @@ class EventController extends Controller
     ]);
 }
 
+    public function volunteerEvents()
+{
+    $events = Event::where('status', 'open')
+        ->where('start_date', '>=', now())
+        ->with('tasks')
+        ->orderBy('start_date')
+        ->get();
+
+    return response()->json([
+        'events' => $events
+    ]);
+}
+
 }

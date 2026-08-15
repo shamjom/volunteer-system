@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\EventRegistration;
 
 class Event extends Model
 {
@@ -25,6 +26,10 @@ class Event extends Model
     public function tasks()
     {
     return $this->hasMany(Task::class);
-    
     }
+
+    public function registrations()
+   {
+    return $this->hasMany(EventRegistration::class);
+   }
 }

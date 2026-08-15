@@ -37,4 +37,11 @@ class User extends Authenticatable
     {
     return $this->belongsToMany(Task::class);
      }
+
+     public function eventRegistrations()
+    {
+    return $this->hasMany(EventRegistration::class,'volunteer_id');
+     }
+
+     
 }
