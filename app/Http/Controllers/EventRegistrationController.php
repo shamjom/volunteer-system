@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\EventRegistration;
+use App\Services\RegistrationSeats;
 use Illuminate\Http\Request;
 
 class EventRegistrationController extends Controller
@@ -48,11 +49,8 @@ class EventRegistrationController extends Controller
             ], 422);
         }
 
-        $approvedCount = EventRegistration::where('event_id', $event->id)
-            ->where('registration_status', 'approved')
-            ->count();
-
-        if ($approvedCount >= $event->max_volunteers) {
+        // حجز ذرّي — التسجيل المعلّق يحجز مقعداً ويحرّره عند الرفض أو الإلغاء
+        if (! RegistrationSeats::reserve($event->id)) {
             return response()->json([
                 'message' => 'Event is full.'
             ], 422);
@@ -113,21 +111,7 @@ class EventRegistrationController extends Controller
             ], 422);
         }
 
-        $approvedCount = EventRegistration::where(
-                'event_id',
-                $registration->event_id
-            )
-            ->where('registration_status', 'approved')
-            ->count();
-
-        $event = $registration->event;
-
-        if ($approvedCount >= $event->max_volunteers) {
-            return response()->json([
-                'message' => 'Event is already full.'
-            ], 422);
-        }
-
+        // المقعد محجوز منذ إنشاء الطلب — الموافقة لا تحجز مقعداً جديداً
         $registration->update([
             'registration_status' => 'approved',
         ]);
@@ -150,6 +134,8 @@ class EventRegistrationController extends Controller
         $registration->update([
             'registration_status' => 'rejected',
         ]);
+
+        RegistrationSeats::release($registration->event_id);
 
         return response()->json([
             'message' => 'Registration rejected successfully.',
@@ -179,7 +165,10 @@ class EventRegistrationController extends Controller
 
         $registration->update([
             'registration_status' => 'cancelled',
+            'cancelled_at'        => now(),
         ]);
+
+        RegistrationSeats::release($registration->event_id);
 
         return response()->json([
             'message' => 'Registration cancelled successfully.',

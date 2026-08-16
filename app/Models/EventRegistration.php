@@ -13,10 +13,13 @@ class EventRegistration extends Model
         'attendance_status',
         'volunteer_hours',
         'registered_at',
+        'cancellation_reason',
+        'cancelled_at',
     ];
 
     protected $casts = [
         'registered_at' => 'datetime',
+        'cancelled_at'  => 'datetime',
     ];
 
     public function event()

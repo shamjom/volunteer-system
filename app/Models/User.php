@@ -43,5 +43,17 @@ class User extends Authenticatable
     return $this->hasMany(EventRegistration::class,'volunteer_id');
      }
 
+     public function teams()
+    {
+    return $this->belongsToMany(Team::class, 'team_members')
+        ->withPivot(['role', 'joined_at'])
+        ->withTimestamps();
+     }
+
+     public function volunteerRequests()
+    {
+    return $this->hasMany(VolunteerRequest::class);
+     }
+
      
 }

@@ -12,6 +12,7 @@ class Task extends Model
         'title',
         'description',
         'status',
+        'last_status_note',
         'deadline',
         'required_volunteers',
 

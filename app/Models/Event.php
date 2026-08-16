@@ -14,8 +14,15 @@ class Event extends Model
         'start_date',
         'end_date',
         'max_volunteers',
+        'slots_taken',
         'status',
         'created_by',
+    ];
+
+    // لا تُضف casts للتواريخ هنا — ذلك يغيّر شكل تسلسل JSON في مسارات لوحة
+    // الإدارة القائمة. طبقة الأدوات تحوّل التواريخ عند التمثيل.
+    protected $casts = [
+        'slots_taken' => 'integer',
     ];
 
     public function creator()
