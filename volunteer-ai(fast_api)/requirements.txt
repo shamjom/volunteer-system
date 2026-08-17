@@ -1,0 +1,13 @@
+# Pinned to the training environment (Kaggle, August 2026). The vendored chat
+# template protects against template drift; this pin protects against the
+# renderer that consumes it -- tojson escaping and apply_chat_template
+# semantics both live in transformers, not in the template file.
+transformers==5.5.0
+
+fastapi==0.141.1
+uvicorn==0.52.3
+httpx==0.28.1
+pydantic==2.13.4
+pydantic-settings==2.15.0
+
+pytest==9.1.1

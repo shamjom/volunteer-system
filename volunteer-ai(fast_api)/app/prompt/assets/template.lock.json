@@ -1,0 +1,6 @@
+{
+  "sha256": "8428c815ac94d82064e35ff1e841dcbe260e7e53a8d0bd3b94afa2eefa9bccab",
+  "source_model": "unsloth/Qwen3-4B",
+  "transformers_version": "5.15.0",
+  "pinned_at": "2026-08-15T14:12:35+00:00"
+}

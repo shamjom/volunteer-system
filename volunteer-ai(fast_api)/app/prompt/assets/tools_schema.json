@@ -1,0 +1,322 @@
+{
+  "contract_version": "1.1",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "list_upcoming_events",
+        "description": "استعراض الفعاليات القادمة المفتوحة للتسجيل. كل المعاملات اختيارية: استدعِ الأداة بلا معاملات إذا لم يحدد المستخدم وقتاً، واستخدم range فقط إذا ذكر تعبيراً زمنياً نسبياً صريحاً.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "range": {
+              "type": "string",
+              "enum": [
+                "today",
+                "tomorrow",
+                "this_week",
+                "next_week",
+                "this_month",
+                "next_month"
+              ],
+              "description": "مدى زمني نسبي. اتركه محذوفاً إن لم يحدد المستخدم وقتاً."
+            },
+            "date_from": {
+              "type": "string",
+              "description": "تاريخ البداية بصيغة YYYY-MM-DD"
+            },
+            "date_to": {
+              "type": "string",
+              "description": "تاريخ النهاية بصيغة YYYY-MM-DD"
+            }
+          },
+          "required": []
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "find_event",
+        "description": "البحث عن فعالية بالاسم وإرجاع أفضل المرشحين مع درجة التطابق. استخدمها قبل أي تسجيل — لا تخترع event_id أبداً.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "اسم الفعالية كما ذكره المستخدم"
+            }
+          },
+          "required": [
+            "query"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "list_teams",
+        "description": "قائمة الفرق المتاحة في الجمعية مع معرّفاتها.",
+        "parameters": {
+          "type": "object",
+          "properties": {},
+          "required": []
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "get_my_profile",
+        "description": "عرض الملف الشخصي للمستخدم الحالي. الهوية من الجلسة — لا يوجد أي معامل.",
+        "parameters": {
+          "type": "object",
+          "properties": {},
+          "required": []
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "get_my_volunteer_hours",
+        "description": "مجموع ساعات تطوع المستخدم الحالي.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "breakdown": {
+              "type": "boolean",
+              "description": "تفصيل الساعات حسب كل فعالية. اتركه محذوفاً إن لم يطلب المستخدم تفصيلاً."
+            }
+          },
+          "required": []
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "get_my_tasks",
+        "description": "المهام الموكلة للمستخدم الحالي.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "in_progress",
+                "done"
+              ],
+              "description": "تصفية حسب الحالة. اتركه محذوفاً لعرض كل المهام."
+            }
+          },
+          "required": []
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "get_my_registrations",
+        "description": "الفعاليات التي سجّل بها المستخدم الحالي.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "include_past": {
+              "type": "boolean",
+              "description": "تضمين الفعاليات المنتهية. اتركه محذوفاً إن لم يطلب المستخدم السجل القديم."
+            }
+          },
+          "required": []
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "get_my_requests_status",
+        "description": "حالة الطلبات التي قدّمها المستخدم الحالي.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "request_type": {
+              "type": "string",
+              "enum": [
+                "join_team",
+                "help",
+                "volunteering"
+              ],
+              "description": "نوع الطلب"
+            }
+          },
+          "required": []
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "search_faq",
+        "description": "البحث في الأسئلة الشائعة عن الجمعية والتطوع.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "موضوع السؤال"
+            }
+          },
+          "required": [
+            "query"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "register_for_event",
+        "description": "تسجيل المستخدم الحالي في فعالية. تحتاج تأكيداً صريحاً من المستخدم قبل الاستدعاء.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "event_id": {
+              "type": "integer",
+              "description": "معرّف الفعالية من find_event أو list_upcoming_events"
+            }
+          },
+          "required": [
+            "event_id"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "withdraw_from_event",
+        "description": "إلغاء تسجيل المستخدم الحالي من فعالية. تحتاج تأكيداً صريحاً.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "event_id": {
+              "type": "integer",
+              "description": "معرّف الفعالية"
+            },
+            "reason": {
+              "type": "string",
+              "description": "سبب الانسحاب إن ذكره المستخدم"
+            }
+          },
+          "required": [
+            "event_id"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "update_my_profile",
+        "description": "تحديث بيانات المستخدم الحالي. حقل واحد على الأقل مطلوب. ممنوع تعديل الدور أو الحالة أو ساعات التطوع. تحتاج تأكيداً صريحاً.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "phone": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "city": {
+              "type": "string"
+            },
+            "emergency_contact": {
+              "type": "string"
+            }
+          },
+          "required": []
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "request_join_team",
+        "description": "تقديم طلب انضمام لفريق. يُنشئ طلباً معلّقاً لا انضماماً مباشراً. تحتاج تأكيداً صريحاً.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "team_id": {
+              "type": "integer",
+              "description": "معرّف الفريق من list_teams"
+            },
+            "motivation": {
+              "type": "string",
+              "description": "سبب الرغبة بالانضمام"
+            }
+          },
+          "required": [
+            "team_id"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "submit_help_request",
+        "description": "إرسال طلب مساعدة أو استفسار للإدارة. تحتاج تأكيداً صريحاً.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "subject": {
+              "type": "string",
+              "description": "موضوع الطلب"
+            },
+            "body": {
+              "type": "string",
+              "description": "نص الطلب"
+            }
+          },
+          "required": [
+            "subject",
+            "body"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "update_task_status",
+        "description": "تحديث حالة مهمة موكلة للمستخدم نفسه. تحتاج تأكيداً صريحاً.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "task_id": {
+              "type": "integer",
+              "description": "معرّف المهمة من get_my_tasks"
+            },
+            "new_status": {
+              "type": "string",
+              "enum": [
+                "in_progress",
+                "done"
+              ]
+            },
+            "note": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "task_id",
+            "new_status"
+          ]
+        }
+      }
+    }
+  ]
+}
